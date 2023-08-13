@@ -7,6 +7,7 @@ import models
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib as mpl
+from sklearn.metrics import roc_auc_score
 
 
 def model_is_fit(model):
@@ -97,32 +98,47 @@ if __name__ == '__main__':
 		st.write("---")
 		st.write("""# Diagnóstico do modelo""")
 
-
 		col1, col2, col3 = st.columns(3)
 
 		# TODO: refatorar código abaixo
+
 		# Feature importances
-		col1.write("### Importância das variáveis \n A linha pontilhada vertical representa p=0.05")
+		col1.write("### Importância das variáveis")
+
 		fig, ax = plt.subplots()
 		pd.Series(model.feature_importances_, index=X.columns).\
 			sort_values(ascending=True).\
 			plot(kind='barh', ax=ax)
 		ax.axvline(1.301, linestyle='--',color='white') # p = 0.05 threshold
-		ax.set_xlabel("- log10 (p-values)")
+		ax.set_xlabel("Feature importances")
 		col1.pyplot(fig)
-
-		#TODO: isso aqui meio que só serve pro modelo linear. Se for RF não vai ter p-values, coeficientes etc
+		col1.expander("Entendendo o cálculo").write(msn.feature_importance)
 
 		# Coefficients and standard errors
-		res_df = pd.DataFrame(model.results.params, columns=['Coef']).join(
-			pd.DataFrame(model.results.bse, columns=['Erro padrão'])
-		)
-		col2.write("### Coeficientes obtidos")
-		col2.table(res_df)
+		# TODO: isso aqui é um puxadinho
+		try:
+			res_df = pd.DataFrame(model.results.params, columns=['Coeficiente']).join(
+				pd.DataFrame(model.results.bse, columns=['Erro padrão']).join(
+				pd.DataFrame(model.pvalues, columns=['p-valor'])
+				)
+			).sort_values('p-valor')
+			col2.write("### Coeficientes obtidos")
+			col2.table(res_df)
+		except AttributeError:
+			pass
 
 		# Metrics (adjusted R2, RMSE for regression; ROC AUC,
+
 		col3.write("### Métricas")
-		col3.metric(label="Adjusted R2", value=f"{round(model.results.rsquared_adj,4)}")
+
+		if problem_type == 'Classificação':
+			y_probs = model.predict_proba(X)[:,1]
+			roc_auc = roc_auc_score(y, y_probs)
+			col3.metric(label="ROC AUC", value=f"{round(roc_auc, 4)}")
+		elif problem_type == 'Regressão':
+			col3.metric(label="Adjusted R2", value=f"{round(model.results.rsquared_adj,4)}")
+		else:
+			raise Exception
 
 
 

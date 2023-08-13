@@ -60,11 +60,11 @@ class LogReg:
     def __sklearn_is_fitted__(self):
         return self.is_fit
 
-    def predict(self, X):
+    def predict_proba(self, X):
         """Seria predict_proba em sklearn"""
         X_ = sm.add_constant(X)
-        return self.model.predict(self.results.params, X_)
-
+        y_probs= self.model.predict(self.results.params, X_)
+        return np.array([1-y_probs,y_probs]).T
 
 
 def load_regression_model(model_type):
@@ -79,7 +79,7 @@ def load_classification_model(model_type):
         return LogReg()
 
     elif model_type == 'Random Forest':
-        return RandomForestClassifier(random_state=201, max_depth=3)
+        return RandomForestClassifier(random_state=201, max_depth=3, class_weight='balanced')
 
 
 def instantiate_model():

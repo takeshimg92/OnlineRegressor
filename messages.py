@@ -20,3 +20,9 @@ data_upload_explanation = \
                 |...|...|...|...|...|
             """
 
+feature_importance = \
+    """Para modelos lineares (regressão linear/logística), a importância é definida como $-\log_{10}(p)$ em 
+            que $p$ é o p-valor. Assim, p-valores baixos terão importâncias grandes, e vice versa. \n Já para modelos 
+            de árvore (RandomForest), a importância é definida com base na melhora em impureza nos splits. Não há uma
+             noção clara de "coeficientes" ou seus p-valores
+    """
