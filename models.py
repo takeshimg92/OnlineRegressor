@@ -82,6 +82,19 @@ def load_classification_model(model_type):
         return RandomForestClassifier(random_state=201, max_depth=3, class_weight='balanced')
 
 
+def model_is_fit(model):
+    from sklearn.utils.validation import check_is_fitted
+    from sklearn.exceptions import NotFittedError
+    is_fit = False
+    try:
+        is_fit = check_is_fitted(model) is None
+    except NotFittedError:
+        pass
+    except TypeError:
+        pass
+    return is_fit
+
+
 def instantiate_model():
     problem_type = st.selectbox(label="Escolha o tipo de problema a abordar",
                                 options=["Selecionar...",

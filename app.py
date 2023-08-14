@@ -1,41 +1,16 @@
 # access this file from cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/ in the Mac terminal
 import os
 import streamlit as st
-from PIL import Image
-import messages as msn
-import models
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib as mpl
-from sklearn.metrics import roc_auc_score, r2_score
-import numpy as np
 
+import messages as msn
+import models
+import metrics as met
 
-def adjusted_r2(y_true, y_pred):
-    r2 = r2_score(y, y_pred)
-    n, p = len(y), len(X.columns)
-    return 1 - (1 - r2) * (n - 1) / (n - p - 1)
-
-
-def ks_score(y_true, y_probs):
-    from scipy.stats import ks_2samp
-    z1 = y_probs[y_true == 1]
-    z0 = y_probs[y_true == 0]
-    ks = ks_2samp(z1, z0).statistic
-    return ks
-
-
-def model_is_fit(model):
-    from sklearn.utils.validation import check_is_fitted
-    from sklearn.exceptions import NotFittedError
-    is_fit = False
-    try:
-        is_fit = check_is_fitted(model) is None
-    except NotFittedError:
-        pass
-    except TypeError:
-        pass
-    return is_fit
+from PIL import Image
 
 
 plt.style.use("dark_background")
@@ -108,7 +83,7 @@ if __name__ == '__main__':
         if run_training:
             model.fit(X, y)
 
-    if model_is_fit(model):
+    if models.model_is_fit(model):
         st.write("---")
         st.write("""# Diagnóstico do modelo""")
 
@@ -147,14 +122,14 @@ if __name__ == '__main__':
 
         if problem_type == 'Classificação':
             y_probs = model.predict_proba(X)[:, 1]
-            roc_auc = roc_auc_score(y, y_probs)
-            ks = ks_score(y, y_probs)
+            roc_auc = met.roc_auc(y, y_probs)
+            ks = met.ks_score(y, y_probs)
             col3.metric(label="ROC AUC", value=f"{round(roc_auc, 4)}")
             col3.metric(label="KS Score", value=f"{round(ks, 2)}")
 
         elif problem_type == 'Regressão':
             y_pred = model.predict(X)
-            r2_adj = adjusted_r2(y, y_pred)
+            r2_adj = met.adjusted_r2(y, y_pred, p=len(X.columns))
             rmse = np.sqrt(((y - y_pred) ** 2).mean())
             col3.metric(label="R2 adjustado", value=f"{round(r2_adj, 4)}")
 
