@@ -42,6 +42,8 @@ def get_features_and_target(data):
         pass
     else:
         col1, col2 = st.columns(2)
+        import os
+        st.write(os.getcwd())
         df = pd.read_excel(data)
         col1.write("Visualização da sua base de dados")
         col1.dataframe(df)
@@ -78,12 +80,11 @@ if __name__ == '__main__':
         #st.expander("Como devem estar formatados meus dados?").write(msn.data_upload_explanation)
 
         #data = st.file_uploader("Adicionar base com covariáveis e alvo para treino (.xlsx)")
-        import os
-        st.write(os.getcwd())
+        
         if problem_type == 'Classificação':
-            data = 'data/Módulo 3.2 - Bases processadas.xlsx'
+            data = 'data/classificacao.xlsx'
         else:
-            data = 'data/Módulo 3.1 - Bases processadas.xlsx'
+            data = 'data/regressao.xlsx'
             
         X, y, run_training = get_features_and_target(data)
 
