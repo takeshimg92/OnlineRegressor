@@ -58,7 +58,7 @@ def get_features_and_target(data):
         exclusive = set(features).intersection(target) == set()
         has_target = len(target) == 1
         if exclusive & has_target:
-            col2.write("✅ Sua escolha de covariáveis e alvo estão boas. Pode ir em frente com o treino.")
+            col2.write("✅ Sua escolha de covariáveis e alvo estão boas.\n\n Pode ir em frente com o treino.")
             X, y = df[features], df[target[0]]
             run_training = col2.button("Rodar treino")
         else:
@@ -135,6 +135,13 @@ if __name__ == '__main__':
             col3.metric(label="ROC AUC", value=f"{round(roc_auc, 4)}")
             col3.metric(label="KS Score", value=f"{round(ks, 2)}")
 
+            st.write("# Predições")
+            df_pred = X.copy()
+            df_pred[' '] = ' '
+            df_pred['Ground truth'] = y
+            df_pred['Prediction'] = model.predict_proba(X)[:,1]
+            st.dataframe(df_pred)
+
         elif problem_type == 'Regressão':
             y_pred = model.predict(X)
             r2_adj = met.adjusted_r2(y, y_pred, p=len(X.columns))
@@ -143,5 +150,14 @@ if __name__ == '__main__':
 
             col3.metric(label="Root mean squared error", value=f"{round(rmse, 2)}")
 
+            st.write("# Predições")
+            df_pred = X.copy()
+            df_pred[' '] = ' '
+            df_pred['Ground truth'] = y
+            df_pred['Prediction'] = model.predict(X)
+            st.dataframe(df_pred)
+
         else:
             raise Exception
+        
+        
