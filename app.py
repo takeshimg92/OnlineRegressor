@@ -75,9 +75,14 @@ if __name__ == '__main__':
     data, X, y = None, None, None
     if model is not None:
         # Load data
-        st.expander("Como devem estar formatados meus dados?").write(msn.data_upload_explanation)
+        #st.expander("Como devem estar formatados meus dados?").write(msn.data_upload_explanation)
 
-        data = st.file_uploader("Adicionar base com covariáveis e alvo para treino (.xlsx)")
+        #data = st.file_uploader("Adicionar base com covariáveis e alvo para treino (.xlsx)")
+        if problem_type == 'Classificação':
+            data = 'data/Módulo 3.2 - Bases processadas.xlsx'
+        else:
+            data = 'data/Módulo 3.1 - Bases processadas.xlsx'
+            
         X, y, run_training = get_features_and_target(data)
 
         if run_training:
