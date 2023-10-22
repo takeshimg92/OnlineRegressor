@@ -1,15 +1,8 @@
 # access this file from cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/ in the Mac terminal
 import os
 import streamlit as st
-import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib as mpl
-
-import messages as msn
-import models
-import metrics as met
-
 from PIL import Image
 
 
@@ -49,3 +42,4 @@ if __name__ == '__main__':
     """)
    
     st.write("🚧  **Página em construção**")
+

@@ -3,9 +3,9 @@ import numpy as np
 import streamlit as st
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 
+from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
 
-
-class LinearReg:
+class LinearReg(BaseEstimator, RegressorMixin):
     """
     Implements the statsmodels OLS regressor in a scikit-learn friendly way
     """
@@ -24,6 +24,7 @@ class LinearReg:
         self.results = self.model.fit()
         self.features = self.model.exog_names
         self.pvalues = self.results.pvalues
+        self.params = self.results.params
         self.feature_importances_ = -np.log10(self.pvalues)
         self.is_fit = True
 
@@ -34,8 +35,8 @@ class LinearReg:
         X_ = sm.add_constant(X)
         return self.model.predict(self.results.params, X_)
 
-
-class LogReg:
+    
+class LogReg(BaseEstimator, ClassifierMixin):
     """
     Implements the statsmodels Logit regressor in a scikit-learn friendly way
     """
@@ -51,21 +52,26 @@ class LogReg:
 
     def fit(self, X, y):
         X_ = sm.add_constant(X)
+        self.classes_ = np.unique(y)
         self.model = sm.Logit(y, X_)
-        self.results = self.model.fit()
+        self.results = self.model.fit();
         self.pvalues = self.results.pvalues
+        self.params = self.results.params
         self.feature_importances_ = -np.log10(self.pvalues)
         self.is_fit = True
+        return self
 
     def __sklearn_is_fitted__(self):
         return self.is_fit
 
     def predict_proba(self, X):
-        """Seria predict_proba em sklearn"""
         X_ = sm.add_constant(X)
         y_probs= self.model.predict(self.results.params, X_)
         return np.array([1-y_probs,y_probs]).T
-
+    
+    def predict(self, X):
+        preds = self.predict_proba(X)
+        return np.where(preds[:,1] >= 0.5, 1, 0)
 
 def load_regression_model(model_type):
     if model_type == 'Regressão linear':
