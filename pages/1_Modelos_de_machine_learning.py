@@ -135,6 +135,74 @@ if __name__ == '__main__':
             col3.metric(label="ROC AUC", value=f"{round(roc_auc, 4)}")
             col3.metric(label="KS Score", value=f"{round(ks, 2)}")
 
+            # show ROC curve
+            col1, col2 = st.columns(2)
+
+            import plotly.graph_objects as go
+
+            fpr, tpr = met.roc_curve(y, y_probs)
+
+            fig = go.Figure()
+            fig.add_trace(go.Scatter(x=fpr.round(3), y=tpr.round(3),
+                                     mode='lines',
+                                     name='Curva ROC',
+                                     hovertemplate='FPR: %{x}, TPR: %{y} <extra></extra>'))
+            fig.add_trace(go.Scatter(x=[0, 1], y=[0, 1],
+                                     mode='lines',
+                                     line=dict(dash='dot'),
+                                     name='Baseline aleatório'))
+
+            fig.update_layout(template="plotly_dark",
+                              title="Curva ROC",
+                              xaxis_title='Taxa de falsos positivos (FPR)',
+                              yaxis_title='Taxa de positivos verdadeiros (TPR)',
+                              legend=dict(
+                                  orientation="h",
+                                  y=-0.2,
+                                  x=0.5,
+                                  xanchor="center",
+                                  yanchor="top"
+                              ))
+
+            col1.plotly_chart(fig, theme=None)
+
+            # show precision and recalls
+            fpr, fnr, thresh = met.false_positive_negative_rates(y, y_probs)
+
+            # fig, ax = plt.subplots()
+            # ax.plot(thresh, fpr, label='False positive rate')
+            # ax.plot(thresh, fnr, label='False negative rate')
+            # ax.set_xlim(0.0, 1.0)
+            # ax.set_xlabel("Limiar de cutoff")
+            # ax.set_title("Taxas de falsos positivos / negativos")
+            # ax.legend()
+            # col3.pyplot(fig)
+            fig = go.Figure()
+            fig.add_trace(go.Scatter(x=thresh.round(3), y=fpr.round(3),
+                                     mode='lines',
+                                     name='Taxa de falsos positivos (FPR)',
+                                     hovertemplate='Thresh: %{x}, FPR: %{y}<extra></extra>'))
+            fig.add_trace(go.Scatter(x=thresh.round(3), y=fnr.round(3),
+                                     mode='lines',
+                                     name='Taxa de falsos negativos (FNR)',
+                                     hovertemplate='Thresh: %{x}, FNR: %{y}<extra></extra>'))
+
+            fig.update_xaxes(range=[0.0, 1.0])
+            fig.update_layout(template="plotly_dark",
+                              title="Curvas de falsos positivos / negativos",
+                              xaxis_title='Limiar de cutoff (threshold)',
+                              legend=dict(
+                                  orientation="h",
+                                  y=-0.2,
+                                  x=0.5,
+                                  xanchor="center",
+                                  yanchor="top"
+                              ))
+
+            col2.plotly_chart(fig, theme=None)
+
+
+
             st.write("# Predições")
             df_pred = X.copy()
             df_pred[' '] = ' '
