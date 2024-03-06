@@ -20,6 +20,6 @@ st.markdown(
     * Dados para download
     * Interface para treino de modelos de machine learning
 
-
+    Use o menu à esquerda (que pode estar minimizado) para acessar as diferentes páginas.
 """
 )
