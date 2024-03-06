@@ -16,3 +16,16 @@ def ks_score(y_true, y_probs):
 def roc_auc(y_true, y_probs):
     from sklearn.metrics import roc_auc_score
     return roc_auc_score(y_true, y_probs)
+
+def roc_curve(y_true, y_probs):
+    from sklearn.metrics import roc_curve
+    fpr, tpr, _ = roc_curve(y_true, y_probs)
+    return fpr, tpr
+
+def false_positive_negative_rates(y_true, y_probs):
+    from sklearn.metrics import roc_curve
+
+    fpr, tpr, thresh = roc_curve(y_true, y_probs)
+    fnr = 1 - tpr
+
+    return fpr, fnr, thresh
