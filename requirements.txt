@@ -10,3 +10,4 @@ lightgbm==3.3.5
 xgboost==2.0.3
 plotly==5.14.1
 shap==0.44.1
+category-encoders==2.6.3
