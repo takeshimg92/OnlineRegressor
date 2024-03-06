@@ -12,7 +12,7 @@ class ModelTypes:
 from sklearn.base import BaseEstimator, TransformerMixin, ClassifierMixin
 from sklearn.linear_model import LogisticRegression
 from category_encoders import WOEEncoder
-from betacal import BetaCalibration
+from beta_calibration import BetaCalibration
 
 class AutoWOEEncoder(BaseEstimator, TransformerMixin):
     def __init__(self):
