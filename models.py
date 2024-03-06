@@ -1,6 +1,11 @@
 import numpy as np
 import streamlit as st
 import numpy as np
+from sklearn.base import BaseEstimator, TransformerMixin, ClassifierMixin
+from sklearn.linear_model import LogisticRegression
+from category_encoders import WOEEncoder
+from beta_calibration import BetaCalibration
+
 
 class ModelTypes:
     LOG_REG = 'Regressão Logística'
@@ -8,11 +13,6 @@ class ModelTypes:
     KNN = 'kNN'
     XGB = 'XGBoost'
     
-
-from sklearn.base import BaseEstimator, TransformerMixin, ClassifierMixin
-from sklearn.linear_model import LogisticRegression
-from category_encoders import WOEEncoder
-from beta_calibration import BetaCalibration
 
 class AutoWOEEncoder(BaseEstimator, TransformerMixin):
     def __init__(self):
