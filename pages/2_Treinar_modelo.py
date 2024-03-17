@@ -136,121 +136,123 @@ if __name__ == '__main__':
         model = st.session_state['model']
         st.write("---")
         st.write("# Diagnóstico do modelo")
+        if X_val is None or X_train is None:
+            st.write("Dê upload de base de treino novamente")
+        else:
+            y_probs = model.predict_proba(X_val)[:, 1]
+            y_probs_treino = model.predict_proba(X_train)[:, 1]
 
-        y_probs = model.predict_proba(X_val)[:, 1]
-        y_probs_treino = model.predict_proba(X_train)[:, 1]
-
-        roc_auc_teste = met.roc_auc(y_val, y_probs)
-        ks_teste = met.ks_score(y_val, y_probs)
-        roc_auc_train = met.roc_auc(y_train, y_probs_treino)
-        ks_train = met.ks_score(y_train, y_probs_treino)
-        
-        col1, col2 = st.columns(2)
-
-        col1.metric(label="ROC AUC (teste)", value=f"{round(roc_auc_teste, 4)}")
-        col1.metric(label="KS Score (teste)", value=f"{round(ks_teste, 2)}")
-
-        col2.metric(label="ROC AUC (treino)", value=f"{round(roc_auc_train, 4)}")
-        col2.metric(label="KS Score (treino)", value=f"{round(ks_train, 2)}")
-
-
-        # show ROC curve
-        fpr, tpr = met.roc_curve(y_val, y_probs)
-        fpr_train, tpr_train = met.roc_curve(y_train, y_probs_treino)
-
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(x=fpr.round(3), y=tpr.round(3),
-                                    mode='lines',
-                                    name='ROC (Teste)',
-                                    hovertemplate='FPR: %{x}, TPR: %{y} <extra></extra>'))
-        fig.add_trace(go.Scatter(x=fpr_train.round(3), y=tpr_train.round(3),
-                                    mode='lines',
-                                    name='ROC (Train)',
-                                    hovertemplate='FPR: %{x}, TPR: %{y} <extra></extra>'))
-        
-        fig.add_trace(go.Scatter(x=[0, 1], y=[0, 1],
-                                    mode='lines',
-                                    line=dict(dash='dot'),
-                                    name='Baseline aleatório'))
-
-        fig.update_layout(template="plotly_dark",
-                            title="Curva ROC",
-                            xaxis_title='Taxa de falsos positivos (FPR)',
-                            yaxis_title='Taxa de positivos verdadeiros (TPR)',
-                            legend=dict(
-                                orientation="h",
-                                y=-0.2,
-                                x=0.5,
-                                xanchor="center",
-                                yanchor="top"
-                            ))
-
-        col1.plotly_chart(fig, theme=None)
-
-        # show precision and recalls
-        fpr, fnr, thresh = met.false_positive_negative_rates(y_val, y_probs)
-        
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(x=thresh.round(3), y=fpr.round(3),
-                                    mode='lines',
-                                    name='Taxa de falsos positivos (FPR)',
-                                    hovertemplate='Thresh: %{x}, FPR: %{y}<extra></extra>'))
-        fig.add_trace(go.Scatter(x=thresh.round(3), y=fnr.round(3),
-                                    mode='lines',
-                                    name='Taxa de falsos negativos (FNR)',
-                                    hovertemplate='Thresh: %{x}, FNR: %{y}<extra></extra>'))
-
-        fig.update_xaxes(range=[0.0, 1.0])
-        fig.update_layout(template="plotly_dark",
-                            title="Curvas de falsos positivos / negativos (somente conjunto de teste)",
-                            xaxis_title='Limiar de cutoff (threshold)',
-                            legend=dict(
-                                orientation="h",
-                                y=-0.2,
-                                x=0.5,
-                                xanchor="center",
-                                yanchor="top"
-                            ))
-
-        col2.plotly_chart(fig, theme=None)
-
-        # st.write("# Predições no dataset inteiro")
-        # df_pred = X.copy()
-        # df_pred[' '] = ' '
-        # df_pred['Ground truth'] = y
-        # df_pred['Prediction'] = model.predict_proba(X)[:,1]
-        # st.dataframe(df_pred)
-
-        # Analise de interpretabilidade
-        col1.write("Interpretabilidade do modelo")
-
-        if model_choice == ModelTypes.LOG_REG:
-            coefs = model['beta_calibrated_classifier'].base_estimator.coef_
-            aux = pd.DataFrame({'var': X_train.columns, 'coef': coefs[0]}).sort_values('coef', ascending=True).reset_index(drop=True) 
+            roc_auc_teste = met.roc_auc(y_val, y_probs)
+            ks_teste = met.ks_score(y_val, y_probs)
+            roc_auc_train = met.roc_auc(y_train, y_probs_treino)
+            ks_train = met.ks_score(y_train, y_probs_treino)
             
-            fig, ax = plt.subplots(figsize=(5,6))
-            ax.barh(aux.index, aux['coef'])
-            ax.set_yticks(aux.index, aux['var'])
-            ax.set_title('Coeficientes da regressão logística')
-            ax.grid()
-            ax.set_facecolor('#0C1017')
-            col1.pyplot(fig)
+            col1, col2 = st.columns(2)
 
-        if model_choice in (ModelTypes.LGBM, ModelTypes.XGB):
-            clf = model['beta_calibrated_classifier'].base_estimator
-            mini_pipeline = make_pipeline(model['auto_woe_encoder'], model['scaler'])
-            X_test_ = mini_pipeline.transform(X_val)
+            col1.metric(label="ROC AUC (teste)", value=f"{round(roc_auc_teste, 4)}")
+            col1.metric(label="KS Score (teste)", value=f"{round(ks_teste, 2)}")
+
+            col2.metric(label="ROC AUC (treino)", value=f"{round(roc_auc_train, 4)}")
+            col2.metric(label="KS Score (treino)", value=f"{round(ks_train, 2)}")
+
+
+            # show ROC curve
+            fpr, tpr = met.roc_curve(y_val, y_probs)
+            fpr_train, tpr_train = met.roc_curve(y_train, y_probs_treino)
+
+            fig = go.Figure()
+            fig.add_trace(go.Scatter(x=fpr.round(3), y=tpr.round(3),
+                                        mode='lines',
+                                        name='ROC (Teste)',
+                                        hovertemplate='FPR: %{x}, TPR: %{y} <extra></extra>'))
+            fig.add_trace(go.Scatter(x=fpr_train.round(3), y=tpr_train.round(3),
+                                        mode='lines',
+                                        name='ROC (Train)',
+                                        hovertemplate='FPR: %{x}, TPR: %{y} <extra></extra>'))
             
+            fig.add_trace(go.Scatter(x=[0, 1], y=[0, 1],
+                                        mode='lines',
+                                        line=dict(dash='dot'),
+                                        name='Baseline aleatório'))
 
-            explainer = shap.TreeExplainer(clf)
-            shap_values = explainer.shap_values(X_test_)
-            fig = plt.figure()
+            fig.update_layout(template="plotly_dark",
+                                title="Curva ROC",
+                                xaxis_title='Taxa de falsos positivos (FPR)',
+                                yaxis_title='Taxa de positivos verdadeiros (TPR)',
+                                legend=dict(
+                                    orientation="h",
+                                    y=-0.2,
+                                    x=0.5,
+                                    xanchor="center",
+                                    yanchor="top"
+                                ))
 
-            if model_choice == ModelTypes.LGBM:
-                shap.summary_plot(shap_values[0], X_test_, feature_names=X_train.columns, max_display=15, show=False)
+            col1.plotly_chart(fig, theme=None)
+
+            # show precision and recalls
+            fpr, fnr, thresh = met.false_positive_negative_rates(y_val, y_probs)
             
-            if model_choice == ModelTypes.XGB:
-                shap.summary_plot(shap_values, X_test_, feature_names=X_train.columns, max_display=15, show=False)
+            fig = go.Figure()
+            fig.add_trace(go.Scatter(x=thresh.round(3), y=fpr.round(3),
+                                        mode='lines',
+                                        name='Taxa de falsos positivos (FPR)',
+                                        hovertemplate='Thresh: %{x}, FPR: %{y}<extra></extra>'))
+            fig.add_trace(go.Scatter(x=thresh.round(3), y=fnr.round(3),
+                                        mode='lines',
+                                        name='Taxa de falsos negativos (FNR)',
+                                        hovertemplate='Thresh: %{x}, FNR: %{y}<extra></extra>'))
 
-            plt.gcf().set_size_inches(8,6)
-            col1.pyplot(fig)
+            fig.update_xaxes(range=[0.0, 1.0])
+            fig.update_layout(template="plotly_dark",
+                                title="Curvas de falsos positivos / negativos (somente conjunto de teste)",
+                                xaxis_title='Limiar de cutoff (threshold)',
+                                legend=dict(
+                                    orientation="h",
+                                    y=-0.2,
+                                    x=0.5,
+                                    xanchor="center",
+                                    yanchor="top"
+                                ))
+
+            col2.plotly_chart(fig, theme=None)
+
+            # st.write("# Predições no dataset inteiro")
+            # df_pred = X.copy()
+            # df_pred[' '] = ' '
+            # df_pred['Ground truth'] = y
+            # df_pred['Prediction'] = model.predict_proba(X)[:,1]
+            # st.dataframe(df_pred)
+
+            # Analise de interpretabilidade
+            col1.write("Interpretabilidade do modelo")
+
+            if model_choice == ModelTypes.LOG_REG:
+                coefs = model['beta_calibrated_classifier'].base_estimator.coef_
+                aux = pd.DataFrame({'var': X_train.columns, 'coef': coefs[0]}).sort_values('coef', ascending=True).reset_index(drop=True) 
+                
+                fig, ax = plt.subplots(figsize=(5,6))
+                ax.barh(aux.index, aux['coef'])
+                ax.set_yticks(aux.index, aux['var'])
+                ax.set_title('Coeficientes da regressão logística')
+                ax.grid()
+                ax.set_facecolor('#0C1017')
+                col1.pyplot(fig)
+
+            if model_choice in (ModelTypes.LGBM, ModelTypes.XGB):
+                clf = model['beta_calibrated_classifier'].base_estimator
+                mini_pipeline = make_pipeline(model['auto_woe_encoder'], model['scaler'])
+                X_test_ = mini_pipeline.transform(X_val)
+                
+
+                explainer = shap.TreeExplainer(clf)
+                shap_values = explainer.shap_values(X_test_)
+                fig = plt.figure()
+
+                if model_choice == ModelTypes.LGBM:
+                    shap.summary_plot(shap_values[0], X_test_, feature_names=X_train.columns, max_display=15, show=False)
+                
+                if model_choice == ModelTypes.XGB:
+                    shap.summary_plot(shap_values, X_test_, feature_names=X_train.columns, max_display=15, show=False)
+
+                plt.gcf().set_size_inches(8,6)
+                col1.pyplot(fig)
