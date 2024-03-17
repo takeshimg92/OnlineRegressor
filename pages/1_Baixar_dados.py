@@ -41,7 +41,7 @@ Seu objetivo será de estudar as variáveis no treino, construir variáveis nova
 Com isso, poderá obter os scores (probabilidade de inadimplência) para a base de teste.
 """)
 
-    # @st.cache_data
+    @st.cache_data
     def load_dfs():
         train = pd.read_csv("data/processed/InteliBank_Inadimplencia_de_credito__Treino.csv")
         test = pd.read_csv("data/processed/InteliBank_Inadimplencia_de_credito__Avaliacao.csv")
@@ -83,3 +83,4 @@ Com isso, poderá obter os scores (probabilidade de inadimplência) para a base 
             file_name="base_test.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
+

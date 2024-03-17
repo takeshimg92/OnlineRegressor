@@ -69,6 +69,11 @@ def get_features_and_target(data):
 
 if __name__ == '__main__':
 
+    # if 'train_bytes' in st.session_state:
+    #     del st.session_state['train_bytes']
+    #     del st.session_state['test_bytes']
+    #     st.experimental_rerun()
+
     st.write(msn.treino)
 
     df = st.file_uploader("Envie seu arquivo para treino", type=['xlsx'], accept_multiple_files=False)
@@ -78,10 +83,7 @@ if __name__ == '__main__':
         X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.3, stratify=y, random_state=123)
 
     model_choice = st.selectbox(label="Selecione o modelo para treinar",
-                            options=["Selecionar...",
-                                     ModelTypes.LOG_REG,
-                                     ModelTypes.LGBM,
-                                     ModelTypes.XGB],
+                            options=["Selecionar..."] + [val for key, val in ModelTypes.__dict__.items() if not key.startswith('__')],
                             index=0)
     
     match model_choice:
@@ -95,13 +97,17 @@ if __name__ == '__main__':
 
         case ModelTypes.KNN:
             from sklearn.neighbors import KNeighborsClassifier
-            base_model = KNeighborsClassifier(n_neighbors=18)
+            base_model = KNeighborsClassifier(n_neighbors=300, weights='uniform', n_jobs=3)
 
         case ModelTypes.XGB:
             from xgboost import XGBClassifier
             # https://analytics-nuts.github.io/Comparative-Study-of-Classification-Techniques-on-Credit-Defaults/
             base_model = XGBClassifier(learning_rate=0.08, n_estimators=125, max_depth=6, colsample_bytree=0.9,gamma=0.5,
                                   min_child_weight=1,subsample=0.8)
+            
+        case ModelTypes.ANN:
+            from sklearn.neural_network import MLPClassifier
+            base_model = MLPClassifier((4, 8, 4), random_state=123)
         case _:
             base_model = None
 
@@ -240,4 +246,5 @@ if __name__ == '__main__':
 
             plt.gcf().set_size_inches(8,6)
             col1.pyplot(fig)
+        
 
