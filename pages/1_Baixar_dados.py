@@ -40,47 +40,55 @@ Ambos os arquivos tem as mesmas variáveis, mas somente o de treino contém as m
 Seu objetivo será de estudar as variáveis no treino, construir variáveis novas se achar necessário, e realizar o treinamento. 
 Com isso, poderá obter os scores (probabilidade de inadimplência) para a base de teste.
 """)
-
-    @st.cache_data
-    def load_dfs():
-        train = pd.read_csv("data/processed/InteliBank_Inadimplencia_de_credito__Treino.csv")
-        test = pd.read_csv("data/processed/InteliBank_Inadimplencia_de_credito__Avaliacao.csv")
-        return train, test
     
-    train, test = load_dfs()
+    link = 'https://www.dropbox.com/scl/fi/uh9k4iwz3snq7yibnl12v/Train_test_files.zip?rlkey=4d9hfqpq6squwrwb156uhlzn1&dl=0'
+    import webbrowser
 
-    def to_excel(df):
-        output = io.BytesIO()
-        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-            df.to_excel(writer, index=False, sheet_name='Sheet1')
-            writer.close()
-        processed_data = output.getvalue()
-        return processed_data
+    # url = 'https://www.streamlit.io/'
+
+    if st.button('Baixar arquivos'):
+        webbrowser.open_new_tab(link)
+
+    # @st.cache_data
+    # def load_dfs():
+    #     train = pd.read_csv("data/processed/InteliBank_Inadimplencia_de_credito__Treino.csv")
+    #     test = pd.read_csv("data/processed/InteliBank_Inadimplencia_de_credito__Avaliacao.csv")
+    #     return train, test
     
-    # Verifica se o DataFrame já foi processado e o botão de download já foi criado
-    if 'download_ready' not in st.session_state or not st.session_state.download_ready:
-        with st.spinner('Aguarde... Preparando o arquivo para download.'):
-            # Chamando a função to_excel para obter o Excel em formato de bytes
-            train_bytes = to_excel(train)
-            test_bytes = to_excel(test)
+    # train, test = load_dfs()
 
-            st.session_state['train_bytes'] = train_bytes
-            st.session_state['test_bytes'] = test_bytes
-            st.session_state['download_ready'] = True
+    # def to_excel(df):
+    #     output = io.BytesIO()
+    #     with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+    #         df.to_excel(writer, index=False, sheet_name='Sheet1')
+    #         writer.close()
+    #     processed_data = output.getvalue()
+    #     return processed_data
+    
+    # # Verifica se o DataFrame já foi processado e o botão de download já foi criado
+    # if 'download_ready' not in st.session_state or not st.session_state.download_ready:
+    #     with st.spinner('Aguarde... Preparando o arquivo para download.'):
+    #         # Chamando a função to_excel para obter o Excel em formato de bytes
+    #         train_bytes = to_excel(train)
+    #         test_bytes = to_excel(test)
 
-    # Sempre mostrar o botão de download após o processamento
-    if 'download_ready' in st.session_state and st.session_state.download_ready:
-        st.download_button(
-            label="Download Train set",
-            data=st.session_state.train_bytes,
-            file_name="base_treino.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
+    #         st.session_state['train_bytes'] = train_bytes
+    #         st.session_state['test_bytes'] = test_bytes
+    #         st.session_state['download_ready'] = True
 
-        st.download_button(
-            label="Download Test set",
-            data=st.session_state.test_bytes,
-            file_name="base_test.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
+    # # Sempre mostrar o botão de download após o processamento
+    # if 'download_ready' in st.session_state and st.session_state.download_ready:
+    #     st.download_button(
+    #         label="Download Train set",
+    #         data=st.session_state.train_bytes,
+    #         file_name="base_treino.xlsx",
+    #         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    #     )
+
+    #     st.download_button(
+    #         label="Download Test set",
+    #         data=st.session_state.test_bytes,
+    #         file_name="base_test.xlsx",
+    #         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    #     )
 

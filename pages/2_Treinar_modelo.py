@@ -78,8 +78,9 @@ if __name__ == '__main__':
 
     df = st.file_uploader("Envie seu arquivo para treino", type=['xlsx'], accept_multiple_files=False)
     X, y = get_features_and_target(df)
-
+    
     if X is not None:
+        st.session_state['has_data'] = True
         X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.3, stratify=y, random_state=123)
 
     model_choice = st.selectbox(label="Selecione o modelo para treinar",
@@ -111,21 +112,28 @@ if __name__ == '__main__':
         case _:
             base_model = None
 
-    is_fit = False
-    if base_model is not None:
-        model = Pipeline([
-            ('auto_woe_encoder', AutoWOEEncoder()),  
-            ('scaler', StandardScaler().set_output(transform="pandas")),
-            ('beta_calibrated_classifier', BetaCalibratedClassifier(base_estimator=base_model)) 
-        ])
+    if base_model is not None and st.session_state.get('has_data'):
 
-        fit = st.button("Treinar modelo")
-        if fit:
-            model.fit(X_train, y_train)
-            is_fit = True
-            st.write("Modelo treinado!")
+        if X_train is None:
+            print("Selecione seus dados antes de treinar o modelo")
+        else:
+            model = Pipeline([
+                ('auto_woe_encoder', AutoWOEEncoder()),  
+                ('scaler', StandardScaler().set_output(transform="pandas")),
+                ('beta_calibrated_classifier', BetaCalibratedClassifier(base_estimator=base_model)) 
+            ])
 
-    if is_fit:
+            fit = st.button("Treinar modelo")
+            if fit:
+                model.fit(X_train, y_train)
+                is_fit = True
+                st.write("Modelo treinado!")
+                st.session_state['is_fit'] = True
+                st.session_state['model'] = model
+                st.session_state['features'] = X_train.columns
+
+    if st.session_state.get('is_fit') is not None and st.session_state.get('has_data'):
+        model = st.session_state['model']
         st.write("---")
         st.write("# Diagnóstico do modelo")
 
@@ -206,12 +214,12 @@ if __name__ == '__main__':
 
         col2.plotly_chart(fig, theme=None)
 
-        st.write("# Predições no dataset inteiro")
-        df_pred = X.copy()
-        df_pred[' '] = ' '
-        df_pred['Ground truth'] = y
-        df_pred['Prediction'] = model.predict_proba(X)[:,1]
-        st.dataframe(df_pred)
+        # st.write("# Predições no dataset inteiro")
+        # df_pred = X.copy()
+        # df_pred[' '] = ' '
+        # df_pred['Ground truth'] = y
+        # df_pred['Prediction'] = model.predict_proba(X)[:,1]
+        # st.dataframe(df_pred)
 
         # Analise de interpretabilidade
         col1.write("Interpretabilidade do modelo")
@@ -246,5 +254,3 @@ if __name__ == '__main__':
 
             plt.gcf().set_size_inches(8,6)
             col1.pyplot(fig)
-        
-
