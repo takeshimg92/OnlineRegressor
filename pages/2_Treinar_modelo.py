@@ -75,7 +75,7 @@ if __name__ == '__main__':
     #     st.experimental_rerun()
 
     st.write(msn.treino)
-
+    X_train, X_val = None, None
     df = st.file_uploader("Envie seu arquivo para treino", type=['xlsx'], accept_multiple_files=False)
     X, y = get_features_and_target(df)
     
@@ -123,7 +123,7 @@ if __name__ == '__main__':
                 ('beta_calibrated_classifier', BetaCalibratedClassifier(base_estimator=base_model)) 
             ])
 
-            fit = st.button("Treinar modelo")
+            fit = st.button("Treinar modelo (pode levar alguns minutos)")
             if fit:
                 model.fit(X_train, y_train)
                 is_fit = True
