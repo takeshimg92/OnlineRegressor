@@ -42,8 +42,8 @@ def get_features_and_target(data):
         import os
         st.write("Carregando dados...")
         df = pd.read_excel(data)
-        col1.write("Visualização da sua base de dados")
-        col1.dataframe(df)
+        col1.write("Visualização da sua base de dados (30 linhas)")
+        col1.dataframe(df.head(30))
         cols = df.columns.tolist()
 
         feats_list, target_list = cols[:-1], cols[-1]

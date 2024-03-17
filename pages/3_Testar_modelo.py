@@ -29,5 +29,5 @@ else:
                 file_name="base_scorada.xlsx",
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             )
-            st.dataframe(df_pred)
+            st.dataframe(df_pred.head(30))
 
