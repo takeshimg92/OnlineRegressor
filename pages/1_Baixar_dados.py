@@ -44,10 +44,10 @@ Com isso, poderá obter os scores (probabilidade de inadimplência) para a base 
     link = 'https://www.dropbox.com/scl/fi/uh9k4iwz3snq7yibnl12v/Train_test_files.zip?rlkey=4d9hfqpq6squwrwb156uhlzn1&dl=0'
     import webbrowser
 
-    # url = 'https://www.streamlit.io/'
+    st.link_button("Baixar dados", link)
 
-    if st.button('Baixar arquivos'):
-        webbrowser.open_new_tab(link)
+    # if st.button('Baixar arquivos'):
+    #     webbrowser.open_new_tab(link)
 
     # @st.cache_data
     # def load_dfs():
