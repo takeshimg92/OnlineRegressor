@@ -41,10 +41,9 @@ Seu objetivo será de estudar as variáveis no treino, construir variáveis nova
 Com isso, poderá obter os scores (probabilidade de inadimplência) para a base de teste.
 """)
     
-    link = 'https://www.dropbox.com/scl/fi/uh9k4iwz3snq7yibnl12v/Train_test_files.zip?rlkey=4d9hfqpq6squwrwb156uhlzn1&dl=0'
-    import webbrowser
+        # import webbrowser
 
-    st.link_button("Baixar dados", link)
+    st.link_button("Baixar dados", "https://www.dropbox.com/scl/fi/uh9k4iwz3snq7yibnl12v/Train_test_files.zip?rlkey=4d9hfqpq6squwrwb156uhlzn1&dl=0")
 
     # if st.button('Baixar arquivos'):
     #     webbrowser.open_new_tab(link)
