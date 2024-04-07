@@ -120,7 +120,8 @@ if __name__ == '__main__':
             model = Pipeline([
                 ('auto_woe_encoder', AutoWOEEncoder()),  
                 ('scaler', StandardScaler().set_output(transform="pandas")),
-                ('beta_calibrated_classifier', BetaCalibratedClassifier(base_estimator=base_model)) 
+                ('model', base_model)
+                # ('beta_calibrated_classifier', BetaCalibratedClassifier(base_estimator=base_model)) 
             ])
 
             fit = st.button("Treinar modelo (pode levar alguns minutos)")
@@ -238,21 +239,21 @@ if __name__ == '__main__':
                 ax.set_facecolor('#0C1017')
                 col1.pyplot(fig)
 
-            if model_choice in (ModelTypes.LGBM, ModelTypes.XGB):
-                clf = model['beta_calibrated_classifier'].base_estimator
-                mini_pipeline = make_pipeline(model['auto_woe_encoder'], model['scaler'])
-                X_test_ = mini_pipeline.transform(X_val)
+            # if model_choice in (ModelTypes.LGBM, ModelTypes.XGB):
+            #     clf = model['beta_calibrated_classifier'].base_estimator
+            #     mini_pipeline = make_pipeline(model['auto_woe_encoder'], model['scaler'])
+            #     X_test_ = mini_pipeline.transform(X_val)
                 
 
-                explainer = shap.TreeExplainer(clf)
-                shap_values = explainer.shap_values(X_test_)
-                fig = plt.figure()
+            #     explainer = shap.TreeExplainer(clf)
+            #     shap_values = explainer.shap_values(X_test_)
+            #     fig = plt.figure()
 
-                if model_choice == ModelTypes.LGBM:
-                    shap.summary_plot(shap_values[0], X_test_, feature_names=X_train.columns, max_display=15, show=False)
+            #     if model_choice == ModelTypes.LGBM:
+            #         shap.summary_plot(shap_values[0], X_test_, feature_names=X_train.columns, max_display=15, show=False)
                 
-                if model_choice == ModelTypes.XGB:
-                    shap.summary_plot(shap_values, X_test_, feature_names=X_train.columns, max_display=15, show=False)
+            #     if model_choice == ModelTypes.XGB:
+            #         shap.summary_plot(shap_values, X_test_, feature_names=X_train.columns, max_display=15, show=False)
 
-                plt.gcf().set_size_inches(8,6)
-                col1.pyplot(fig)
+            #     plt.gcf().set_size_inches(8,6)
+            #     col1.pyplot(fig)
