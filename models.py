@@ -11,7 +11,7 @@ class ModelTypes:
     LOG_REG = 'Regressão Logística'
     LGBM = 'LightGBM'
     ANN = 'Rede Neural'
-    KNN = 'kNN'
+    # KNN = 'kNN'
     XGB = 'XGBoost'
     
 

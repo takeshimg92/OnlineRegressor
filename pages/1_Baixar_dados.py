@@ -42,8 +42,9 @@ Com isso, poderá obter os scores (probabilidade de inadimplência) para a base 
 """)
     
         # import webbrowser
-
-    st.link_button("Baixar dados", "https://www.dropbox.com/scl/fi/uh9k4iwz3snq7yibnl12v/Train_test_files.zip?rlkey=4d9hfqpq6squwrwb156uhlzn1&dl=0")
+    # link = "https://www.dropbox.com/scl/fi/uh9k4iwz3snq7yibnl12v/Train_test_files.zip?rlkey=4d9hfqpq6squwrwb156uhlzn1&dl=0"
+    link = "https://www.dropbox.com/scl/fi/i1ys54vmfsqgfhje3vaf6/Train_test_files_excel.zip?rlkey=h7qx8n09c5hbbih605nw98dpo&st=dczvbwjz&dl=0"
+    st.link_button("Baixar dados", link)
 
     # if st.button('Baixar arquivos'):
     #     webbrowser.open_new_tab(link)

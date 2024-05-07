@@ -9,7 +9,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline, make_pipeline
 from sklearn.preprocessing import StandardScaler
 import plotly.graph_objects as go
-import shap
+# import shap
 
 import messages as msn
 import metrics as met
@@ -96,9 +96,9 @@ if __name__ == '__main__':
             base_model = LGBMClassifier(n_estimators=300, learning_rate=0.007, reg_alpha=0.5, reg_lambda=0.5,  random_state=123)
             # model = LGBMClassifier(n_estimators=125, learning_rate=0.08, colsample_bytree=0.9, min_child_weight=1, subsample=0.8)
 
-        case ModelTypes.KNN:
-            from sklearn.neighbors import KNeighborsClassifier
-            base_model = KNeighborsClassifier(n_neighbors=300, weights='uniform', n_jobs=3)
+        # case ModelTypes.KNN:
+        #     from sklearn.neighbors import KNeighborsClassifier
+        #     base_model = KNeighborsClassifier(n_neighbors=300, weights='uniform', n_jobs=3)
 
         case ModelTypes.XGB:
             from xgboost import XGBClassifier
@@ -225,10 +225,12 @@ if __name__ == '__main__':
             # st.dataframe(df_pred)
 
             # Analise de interpretabilidade
-            col1.write("Interpretabilidade do modelo")
+            
 
             if model_choice == ModelTypes.LOG_REG:
-                coefs = model['beta_calibrated_classifier'].base_estimator.coef_
+                col1.write("Interpretabilidade do modelo (somente disponível para reg. log.)")
+                # coefs = model['beta_calibrated_classifier'].base_estimator.coef_
+                coefs = model['model'].coef_
                 aux = pd.DataFrame({'var': X_train.columns, 'coef': coefs[0]}).sort_values('coef', ascending=True).reset_index(drop=True) 
                 
                 fig, ax = plt.subplots(figsize=(5,6))
@@ -239,6 +241,7 @@ if __name__ == '__main__':
                 ax.set_facecolor('#0C1017')
                 col1.pyplot(fig)
 
+            # OLD: does interpretability for more models, but is heavy
             # if model_choice in (ModelTypes.LGBM, ModelTypes.XGB):
             #     clf = model['beta_calibrated_classifier'].base_estimator
             #     mini_pipeline = make_pipeline(model['auto_woe_encoder'], model['scaler'])
